@@ -1,6 +1,7 @@
 package io.security.corespringsecurity.security.config;
 
 import io.security.corespringsecurity.security.handler.CustomAuthenticationSuccessHandler;
+import io.security.corespringsecurity.security.handler.CustomAutheticationFailureHandler;
 import io.security.corespringsecurity.security.provider.CustomAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -26,6 +27,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // 인증 성공시 핸들러
     @Autowired
     private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    // 인증 실패시 핸들러
+    @Autowired
+    private CustomAutheticationFailureHandler autheticationFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -57,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/", "/users").permitAll() // 해당 경로에 누구나 접근 가능
+                .antMatchers("/", "/users", "user/login/**", "/login*").permitAll() // 해당 경로에 누구나 접근 가능
                 .antMatchers("/mypage").hasRole("USER") // 해당 경로에 USER만 접근 가능
                 .antMatchers("/messages").hasRole("MANAGER") // 해당 경로에 MANAGER만 접근 가능
                 .antMatchers("/config").hasRole("ADMIN") // 해당 경로에 ADMIN만 접근 가능
@@ -69,6 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .authenticationDetailsSource(authenticationDetailsSource)
                     .defaultSuccessUrl("/")
                     .successHandler(authenticationSuccessHandler)
+                    .failureHandler(autheticationFailureHandler)
                     .permitAll();
     }
 }

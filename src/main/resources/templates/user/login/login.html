@@ -9,6 +9,11 @@
             <div class="panel">
                 <p>ID와 PW 입력</p>
             </div>
+
+            <div th:if="${param.error}" class="form-group">
+                <span th:text="${exception}" class="alert alert-danger">인증 실패</span>
+            </div>
+
             <form th:action="@{/login_proc}" class="form-signin" method="post">
                 <input th:type="hidden" th:value="secret" name="secret_key">
                 <div class="form-group">

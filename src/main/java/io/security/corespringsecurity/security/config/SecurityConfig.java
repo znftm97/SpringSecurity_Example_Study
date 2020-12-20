@@ -1,5 +1,6 @@
 package io.security.corespringsecurity.security.config;
 
+import io.security.corespringsecurity.security.handler.CustomAccessDeniedHandler;
 import io.security.corespringsecurity.security.handler.CustomAuthenticationSuccessHandler;
 import io.security.corespringsecurity.security.handler.CustomAutheticationFailureHandler;
 import io.security.corespringsecurity.security.provider.CustomAuthenticationProvider;
@@ -41,8 +42,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;*/
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
-        return new CustomAuthenticationProvider(passwordEncoder());
+        public AuthenticationProvider authenticationProvider(){
+            return new CustomAuthenticationProvider(passwordEncoder());
+    }
+
+    //인가 처리 핸들러
+    @Bean
+    public CustomAccessDeniedHandler accessDeniedHandler(){
+        CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler();
+        accessDeniedHandler.setErrorPage("/denied");
+
+        return accessDeniedHandler;
     }
 
     //인증
@@ -76,5 +86,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .successHandler(authenticationSuccessHandler)
                     .failureHandler(autheticationFailureHandler)
                     .permitAll();
+        http
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler())
+        ;
     }
+
+
 }
